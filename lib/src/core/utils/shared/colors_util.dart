@@ -7,4 +7,8 @@ class ColorsUtil {
 
   static final cinzaEscuro = utilsPlus.colorHex('#4A4A4A');
   static final background = utilsPlus.colorHex('#FCFCFC');
+  static final headerBackground = utilsPlus.colorHex('#FFFFFF');
+  static final textField = utilsPlus.colorHex('#F7F7F7');
+  static final textFieldIcon = utilsPlus.colorHex('##CCCCCC');
+
 }

@@ -8,10 +8,13 @@ import 'components/pokeCard.dart';
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ColorsUtil.background,
-      appBar: _buildAppBar(),
-      body: _buildBody(),
+    return SafeArea(
+      
+      child: Scaffold(
+        backgroundColor: ColorsUtil.background,
+        appBar: _buildAppBar(),
+        body: _buildBody(),
+      ),
     );
   }
 
@@ -19,7 +22,7 @@ class HomeScreen extends StatelessWidget {
   _buildAppBar(){
 
     return PreferredSize(
-      preferredSize: Size.fromHeight(150.0),
+      preferredSize: Size.fromHeight(150),//pode sumir com a app bar
       child: ContainerPlus(
         color: ColorsUtil.headerBackground,
         child: Column(
@@ -59,10 +62,10 @@ class HomeScreen extends StatelessWidget {
       color: ColorsUtil.headerBackground,
       shadows: [
         ShadowPlus(
-          color: Colors.black,
-          moveDown: 1,
+          color: ColorsUtil.black,
+          moveDown: 4,
           blur: 2,
-          spread: 1,
+          spread: 0,
           opacity: 0.1,
         ),
       ],
@@ -71,10 +74,14 @@ class HomeScreen extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 18),
         height: 48,
         backgroundColor: ColorsUtil.textField,
-        cursorColor: Colors.black,
+        cursorColor: ColorsUtil.black,
         enabled: true,
         radius: RadiusPlus.all(12),
         // textInputType: TextInputType.,
+        textInputAction: TextInputAction.search,
+        onSubmitted: (d){
+          print(d);
+        },
         placeholder: TextPlus(
           'Search Pokemon',
           color: ColorsUtil.textFieldIcon,
@@ -91,8 +98,12 @@ class HomeScreen extends StatelessWidget {
   _buildBody(){
     return ListView.builder(
       itemCount: 20,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       itemBuilder: (context, index){
-        return PokeCard();
+        return PokeCard(
+          index: index,
+          imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${(index+1).toString()}.png',
+        );
       }
     );
   }

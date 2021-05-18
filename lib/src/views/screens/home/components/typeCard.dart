@@ -5,24 +5,30 @@ import '../../../../core/utils/shared/colors_util.dart';
 
 class TypeCard extends StatelessWidget {
   
+  TypeCard({this.cardFont = 10, this.cardMargin = 4});
+
+  final double cardFont;
+  final double cardMargin;
+
   @override
   Widget build(BuildContext context) {
     return ContainerPlus(
       isCircle: true,
-      height: 20,
       border: BorderPlus(
         width: 0.5,
-        color: Colors.white
+        color: ColorsUtil.white
       ),
-      color: Color.fromRGBO(255, 255, 255, .3),
-      padding: EdgeInsets.symmetric(horizontal: 10),
-      margin: EdgeInsets.only(right:4),
+      color: ColorsUtil.typeCard,
+      // padding: EdgeInsets.symmetric(horizontal: 10),
+      margin: EdgeInsets.only(right: this.cardMargin),
       child: TextPlus(
         'poison'.capitalizeFirstWord,
         color: ColorsUtil.white,
         fontWeight: FontWeight.w700,
         isCenter: true,
-        fontSize: 10,
+        fontSize: this.cardFont,
+        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+
       ),
     );
   }

@@ -39,8 +39,11 @@ class DetalheScreen extends StatelessWidget {
             ContainerPlus(
               isCenter: true,
               margin: EdgeInsets.symmetric(horizontal:48),
-              child: Image.network(
-                this.imageUrl,
+              child: Hero(
+                tag:this.imageUrl,
+                child: Image.network(
+                  this.imageUrl,
+                ),
               ),
             ),
             TextPlus(

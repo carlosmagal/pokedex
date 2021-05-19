@@ -84,11 +84,14 @@ class _PokeCardState extends State<PokeCard> {
     return Row(
       // fit: StackFit.expand,
       children: [
-        Image.network(
-          widget.imageUrl,
+        Hero(
+          tag: widget.imageUrl,
+          child: Image.network(
+            widget.imageUrl,
+          ),
         ),
         Align(
-          alignment: Alignment.topLeft,
+          alignment: Alignment.topLeft, 
           child: GestureDetector(
             onTap: (){
               setState(() {

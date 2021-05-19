@@ -8,51 +8,56 @@ import 'components/pokeCard.dart';
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      
-      child: Scaffold(
-        backgroundColor: ColorsUtil.background,
-        appBar: _buildAppBar(),
-        body: _buildBody(),
-      ),
+    return Scaffold(
+      backgroundColor: ColorsUtil.background,
+      appBar: this._buildAppBar(),
+      body: this._buildBody(),
     );
   }
-
 
   _buildAppBar(){
 
-    return PreferredSize(
-      preferredSize: Size.fromHeight(150),//pode sumir com a app bar
-      child: ContainerPlus(
-        color: ColorsUtil.headerBackground,
-        child: Column(
-          children: [
-            _headerTitle(),
-            _headerTextField()
-          ],
+    return AppBar(
+      backgroundColor: ColorsUtil.headerBackground,
+      elevation: 0,
+      title: TextPlus(
+        'Pokédex',
+        fontSize: 24,
+        fontWeight: FontWeight.w500,
+        color: ColorsUtil.cinzaEscuro,
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 12.0),
+          child: Icon(
+            Icons.favorite_border_rounded,
+            color: ColorsUtil.cinzaEscuro,
+          ),
         ),
-      ), 
+      ],
     );
   }
 
-  _headerTitle(){
-
-    return ContainerPlus(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          TextPlus(
-            'Pokédex',
-            fontSize: 24,
-            fontWeight: FontWeight.w500,
-            color: ColorsUtil.cinzaEscuro,
+  _buildBody(){
+    return Column(
+      children: [
+        this._headerTextField(),
+        Expanded(
+          child: ListView.builder(
+            // padding: EdgeInsets.symmetric(vertical: 16, ),
+            physics: BouncingScrollPhysics(),
+            itemCount: 20,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            itemBuilder: (context, index){
+              return PokeCard(
+                index: index,
+                imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${(index+1).toString()}.png',
+              );
+            }
           ),
-          Icon(
-            Icons.favorite_border_rounded
-          ),
-        ],
-      ),
+        ),
+        
+      ],
     );
   }
 
@@ -94,18 +99,4 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
-  _buildBody(){
-    return ListView.builder(
-      itemCount: 20,
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      itemBuilder: (context, index){
-        return PokeCard(
-          index: index,
-          imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${(index+1).toString()}.png',
-        );
-      }
-    );
-  }
-
 }

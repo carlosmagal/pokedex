@@ -46,7 +46,7 @@ class HomeScreen extends StatelessWidget {
           child: ListView.builder(
             // padding: EdgeInsets.symmetric(vertical: 16, ),
             physics: BouncingScrollPhysics(),
-            itemCount: 20,
+            itemCount: 31,
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             itemBuilder: (context, index){
               return PokeCard(
@@ -56,7 +56,6 @@ class HomeScreen extends StatelessWidget {
             }
           ),
         ),
-        
       ],
     );
   }
@@ -79,7 +78,7 @@ class HomeScreen extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 18),
         height: 48,
         backgroundColor: ColorsUtil.textField,
-        cursorColor: ColorsUtil.black,
+        cursorColor: ColorsUtil.cinzaEscuro,
         enabled: true,
         radius: RadiusPlus.all(12),
         // textInputType: TextInputType.,

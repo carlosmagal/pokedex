@@ -37,7 +37,7 @@ class _PokeCardState extends State<PokeCard> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          this._cardLeft('#001', 'Bulbaa'),
+          this._cardLeft('#0${(widget.index + 1).toString()}', 'Bulbaa'),
           // Spacer(),
           this._cardRight(),
         ],
@@ -55,7 +55,7 @@ class _PokeCardState extends State<PokeCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextPlus(
-              '#001',
+              id,
               fontWeight: FontWeight.w400,
               fontSize: 10,
               color: ColorsUtil.white,

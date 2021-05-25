@@ -78,7 +78,7 @@ class DetalheScreen extends StatelessWidget {
       width: size,
       height: 300,
       margin: EdgeInsets.only(top: 24),
-      padding: EdgeInsets.fromLTRB(24, 0, 24, 0),
+      padding: EdgeInsets.fromLTRB(24, 0, 24, 16),
       child: SingleChildScrollView(
         physics: BouncingScrollPhysics() ,
         child: Column(
@@ -97,17 +97,13 @@ class DetalheScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.fromLTRB(0, 20, 0, 24),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  this._statusData(.8),
-                  this._statusData(.1),
-                  this._statusData(.5),
-                  this._statusData(.2),
-                  this._statusData(.8),
-                  this._statusData(.8),
-                  this._statusData(1),
-                  this._statusData(.2),
-
+                  this._statusData('HP', 80),
+                  this._statusData('Attack', 10),
+                  this._statusData('Defense', 50),
+                  this._statusData('Special-Attack', 20),
+                  this._statusData('Special-Defense', 80),
+                  this._statusData('Speed', 45),
                 ],
               ),
             ),
@@ -118,43 +114,45 @@ class DetalheScreen extends StatelessWidget {
   }
 
 
-  _statusData(double endValue){
+  _statusData(String statusLabel, double endValue){
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        TextPlus(
-          'HP',
-          fontSize: 16,
-          fontWeight: FontWeight.w300,
-          color: ColorsUtil.status,
-          margin: EdgeInsets.only(top:20),
-        ),
-        Spacer(),
-        TextPlus(
-          '45',
-          fontSize: 24,
-          fontWeight: FontWeight.w500,
-          color: ColorsUtil.status,
-          margin: EdgeInsets.only(right: 16),
-        ),
-        ContainerPlus(
-          width: 130,
-          height: 10,
-          radius: RadiusPlus.all(10),
-          child: TweenAnimationBuilder(onEnd: (){},
-            tween: Tween<double>(begin: 0.0, end: endValue,), 
-            duration: Duration(milliseconds: 1800), 
-            builder: (context, double value, _){ 
-              return LinearProgressIndicator(
-                value: value,
-                valueColor: AlwaysStoppedAnimation<Color>(ColorsUtil.statusLinearProgress),
-                backgroundColor: Color(0xffFB6C6C).withOpacity(0.2),
-              );
-            }
+    return ContainerPlus(
+      margin: EdgeInsets.only(bottom:8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          TextPlus(
+            statusLabel,
+            fontSize: 16,
+            fontWeight: FontWeight.w300,
+            color: ColorsUtil.status,
           ),
-        ),
-      ],
+          Spacer(),
+          TextPlus(
+            endValue.toStringAsFixed(0),
+            fontSize: 24,
+            fontWeight: FontWeight.w500,
+            color: ColorsUtil.status,
+            margin: EdgeInsets.only(right: 16),
+          ),
+          ContainerPlus(
+            width: 130,
+            height: 10,
+            radius: RadiusPlus.all(10),
+            child: TweenAnimationBuilder(onEnd: (){},
+              tween: Tween<double>(begin: 0.0, end: endValue/100,), 
+              duration: Duration(milliseconds: 1800), 
+              builder: (context, double value, _){ 
+                return LinearProgressIndicator(
+                  value: value,
+                  valueColor: AlwaysStoppedAnimation<Color>(ColorsUtil.statusLinearProgress),
+                  backgroundColor: Color(0xffFB6C6C).withOpacity(0.2),
+                );
+              }
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

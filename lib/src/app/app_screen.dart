@@ -37,6 +37,7 @@ class _AppScreenState extends State<AppScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return FlutterAppPlus(
+      debugShowMaterialGrid: false,
       debugShowCheckedModeBanner: !AppConfig.getInstance().isProd,
       title: AppConfig.getInstance().appName!,
       theme: ThemeData(fontFamily: 'Poppins'),

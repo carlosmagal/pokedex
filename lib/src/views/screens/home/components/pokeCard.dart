@@ -71,8 +71,8 @@ class _PokeCardState extends State<PokeCard> {
         ),
         Row(
           children: [
-            TypeCard(),
-            TypeCard(),
+            TypeCard('Poison'),
+            TypeCard('Grass'),
           ],
         )
       ],

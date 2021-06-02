@@ -56,8 +56,8 @@ class DetalheScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children:[
-                TypeCard(cardFont: 16, cardMargin: 8,),
-                TypeCard(cardFont: 16),
+                TypeCard('Poison', cardFont: 16, cardMargin: 8),
+                TypeCard('Grass', cardFont: 16),
               ]
             ),
 
@@ -68,7 +68,6 @@ class DetalheScreen extends StatelessWidget {
       ),
     );
   }
-
 
   _statusBarContainer(double size){
 
@@ -112,7 +111,6 @@ class DetalheScreen extends StatelessWidget {
       ),
     );
   }
-
 
   _statusData(String statusLabel, double endValue){
 

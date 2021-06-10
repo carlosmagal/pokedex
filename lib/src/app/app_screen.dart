@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_plus/flutter_plus.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
+import 'package:pokedex_app/src/views/screens/home/home_controller.dart';
 import 'package:pokedex_app/src/views/screens/home/home_screen.dart';
 
 import 'config/app_config.dart';
@@ -32,6 +34,7 @@ class _AppScreenState extends State<AppScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance?.addObserver(this);
     Intl.defaultLocale = 'pt_BR';
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    GetIt.I.registerSingleton(HomeController());
   }
 
   @override

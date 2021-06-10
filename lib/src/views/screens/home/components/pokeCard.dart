@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_plus/flutter_plus.dart';
+import 'package:pokedex_app/src/core/models/pokemon_model.dart';
 import 'package:pokedex_app/src/views/screens/detalhe/detalhe_screen.dart';
 import 'package:pokedex_app/src/views/screens/home/components/typeCard.dart';
 
@@ -7,16 +8,16 @@ import '../../../../core/utils/shared/colors_util.dart';
 
 class PokeCard extends StatefulWidget {
 
-  PokeCard({required this.index, required this.imageUrl});
-  final int index; 
-  final String imageUrl;
+  PokeCard(this.pokemon, this.setIsFavorite);
+
+  final PokemonModel pokemon;
+  final Function setIsFavorite;
 
   @override
   _PokeCardState createState() => _PokeCardState();
 }
 
 class _PokeCardState extends State<PokeCard> {
-  bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
@@ -24,22 +25,22 @@ class _PokeCardState extends State<PokeCard> {
       onTap: (){
         navigatorPlus.showModal(
           DetalheScreen(
-            ColorsUtil.grass,
-            widget.imageUrl
+            widget.pokemon,
+            this._setFavorite,
           ),
         );
       },
       radius: RadiusPlus.all(20),
       margin: const EdgeInsets.fromLTRB(24, 16, 24, 0),
       padding: const EdgeInsets.all(12),
-      color: ColorsUtil.grass,
+      color: widget.pokemon.color!,
       height: 85,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          this._cardLeft('#0${(widget.index + 1).toString()}', 'Bulbaa'),
+          this._cardLeft('#0${(widget.pokemon.id!).toString()}', widget.pokemon.name!),
           // Spacer(),
-          this._cardRight(),
+          this._cardRight(widget.pokemon.imgUrl!, widget.pokemon.id!),
         ],
       ),
     );
@@ -62,7 +63,7 @@ class _PokeCardState extends State<PokeCard> {
               textAlign: TextAlign.start,
             ),
             TextPlus(
-              'Bulbasaur',
+              name.capitalizeFirstWord,
               fontWeight: FontWeight.w500,
               fontSize: 16,
               color: ColorsUtil.white,
@@ -70,43 +71,44 @@ class _PokeCardState extends State<PokeCard> {
           ],
         ),
         Row(
-          children: [
-            TypeCard('Poison'),
-            TypeCard('Grass'),
-          ],
+          children: widget.pokemon.types!.map((type){
+            return TypeCard(type);
+          }).toList(),
         )
       ],
     );
   }
 
-  _cardRight(){
+  _cardRight(String image, int id){
     
     return Row(
       // fit: StackFit.expand,
       children: [
         Hero(
-          tag: widget.imageUrl,
+          tag: id,
           child: Image.network(
-            widget.imageUrl,
+            image,
           ),
         ),
         Align(
           alignment: Alignment.topLeft, 
           child: GestureDetector(
-            onTap: (){
-              setState(() {
-                this.isFavorite = !this.isFavorite;
-              });
-            },
+            onTap: this._setFavorite,
             child: Icon(
-              this.isFavorite ? Icons.favorite_border_outlined : Icons.favorite,
+              widget.pokemon.isFavorite! ? Icons.favorite : Icons.favorite_border_outlined,
               size: 20,
               color: ColorsUtil.white,
             ),
           )
         )
-        
       ],
     );
   }
+
+  _setFavorite() async{
+    setState(() {});
+    await widget.setIsFavorite(widget.pokemon.name!, !widget.pokemon.isFavorite!);
+     
+  }
+  
 }

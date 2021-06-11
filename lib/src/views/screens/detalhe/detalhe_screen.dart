@@ -8,10 +8,11 @@ import 'components/animated_hero.dart';
 
 class DetalheScreen extends StatefulWidget {
 
-  DetalheScreen(this.pokemon, this.setIsFavorite);
+  DetalheScreen(this.pokemon, this.setIsFavorite, this.isFiltering);
 
   final PokemonModel pokemon;
   final Function setIsFavorite;
+  final bool isFiltering;
 
   @override
   _DetalheScreenState createState() => _DetalheScreenState();
@@ -37,7 +38,12 @@ class _DetalheScreenState extends State<DetalheScreen> {
           ),
           onPressed: (){
             setState(() {});
-            this.widget.setIsFavorite();
+
+            if(this.widget.isFiltering)
+              this.widget.pokemon.isFavorite = !this.widget.pokemon.isFavorite!;
+
+            else
+              this.widget.setIsFavorite();
           },
         )
       ],

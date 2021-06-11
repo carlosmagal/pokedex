@@ -86,11 +86,11 @@ class HomeScreen extends StatelessWidget {
               if(this._homeController.error)
                 return this._bodyError();
               
-              if(this._homeController.pokemonsData.isEmpty || this._homeController.isSearching || this._homeController.isLoading)
-                return this._bodyProgress();
-
               if(this._homeController.isFiltering && this._homeController.pokemonsData.isEmpty)
                 return this._bodyEmptyList();
+              
+              if(this._homeController.pokemonsData.isEmpty || this._homeController.isSearching || this._homeController.isLoading)
+                return this._bodyProgress();
 
               return this._bodyPokemonList();
             }
@@ -158,7 +158,9 @@ class HomeScreen extends StatelessWidget {
 
   _bodyError(){
     return GestureDetector(
-      onTap: this._homeController.refreshPokemonsList,
+      onTap: (){
+        this._homeController.refreshPokemonsList(refreshAll: true);
+      },
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -203,15 +205,10 @@ class HomeScreen extends StatelessWidget {
           itemCount: this._homeController.pokemonsData.length,
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           itemBuilder: (context, index){
-            // if(this._homeController.isFiltering)
-            //   return PokeCard(
-            //     this._homeController.pokemonsFiltered[index],
-            //     this._homeController.setFavorites 
-            //   );
-
             return PokeCard(
               this._homeController.pokemonsData[index],
               this._homeController.saveFavorites,
+              this._homeController.isFiltering,
             );
           }
         );

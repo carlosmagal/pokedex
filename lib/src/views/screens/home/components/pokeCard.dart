@@ -8,10 +8,11 @@ import '../../../../core/utils/shared/colors_util.dart';
 
 class PokeCard extends StatefulWidget {
 
-  PokeCard(this.pokemon, this.setIsFavorite);
+  PokeCard(this.pokemon, this.setIsFavorite, this.isFiltering);
 
   final PokemonModel pokemon;
   final Function setIsFavorite;
+  final bool isFiltering;
 
   @override
   _PokeCardState createState() => _PokeCardState();
@@ -23,14 +24,17 @@ class _PokeCardState extends State<PokeCard> {
   Widget build(BuildContext context) {
     return ContainerPlus(
       onTap: ()async{
-        print('abriu');
         await navigatorPlus.showModal(
           DetalheScreen(
             widget.pokemon,
             this._setFavorite,
+            widget.isFiltering
           ),
         );
-        print('fechou');
+
+        //caso esteja filtrando e o favorito do pokemon seja false, ele tira da lista
+        if(widget.isFiltering && !widget.pokemon.isFavorite!)
+          await widget.setIsFavorite(widget.pokemon, changeIsFavorite: false);
       },
       radius: RadiusPlus.all(20),
       margin: const EdgeInsets.fromLTRB(24, 16, 24, 0),
@@ -109,10 +113,8 @@ class _PokeCardState extends State<PokeCard> {
 
   _setFavorite() async{
     setState(() {});
-    // widget.pokemon.isFavorite = !widget.pokemon.isFavorite!;
-    // await widget.setIsFavorite(widget.pokemon.name!, !widget.pokemon.isFavorite!);
      
-     await widget.setIsFavorite(widget.pokemon);
+    await widget.setIsFavorite(widget.pokemon);
   }
   
 }

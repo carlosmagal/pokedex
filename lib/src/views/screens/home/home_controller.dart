@@ -21,19 +21,8 @@ abstract class _HomeController with Store {
   }
 
   _loadHomeController() async{
-    await this._loadFavoritesList();
+    await this._loadFavorites();
     this._getPokemons();
-  }
-
-  @observable
-  ObservableMap <String, dynamic> _favoritesMap = ObservableMap();
-
-  @observable
-  ObservableList<PokemonModel> _pokemonsFilteredByFavorite = ObservableList();
-
-  @computed
-  List<PokemonModel> get pokemonsFiltered{
-    return this._pokemonsFilteredByFavorite.where((element) => element.isFavorite!).toList();
   }
 
   @observable 
@@ -82,22 +71,13 @@ abstract class _HomeController with Store {
       if(this.isSearching || this.isFiltering) break;
 
       await this._pokedexService.getPokemonByName(element.name).then((response){
-        if (response == null || this.isSearching || this.isFiltering) {
+        if (response == null || this.isSearching || this.isFiltering)
           return;
-        }
-        //se ja tiver no salvo no map, manda o valor que estiver la
-        // if(this._favoritesMap.containsKey(element.name!)){
-        //   this._pokemonsData.add(PokemonModel.map(response, this._favoritesMap[element.name!]));
-
-        // }else {//se nao estiver salvo, vai como false e é cadastrado no map
-        //   this._pokemonsData.add(PokemonModel.map(response, false));
-        //   this.setFavorites(element.name!, false);
-        // }
-      this._pokemonsData.add(PokemonModel.map(response, _favoritesHavePokemon(element.name!)));
-
+        
+        this._pokemonsData.add(PokemonModel.map(response, _favoritesHavePokemon(element.name!)));
       });
     }
-    print(this._favoritesMap);
+    print(this._favoritePokemons.length);
   }
 
   @observable
@@ -151,12 +131,6 @@ abstract class _HomeController with Store {
       
       this._pokemonsData.clear();
       final name = response['name'];//caso a pesquisa seja feita pelo número(id)
-      
-      //se ja tiver no salvo no favoritesmap, manda o valor que estiver la
-      // if(this._favoritesMap.containsKey(name))    
-      //   this._pokemonsData.add(PokemonModel.map(response, this._favoritesMap[name]));
-      // else        
-      //   this._pokemonsData.add(PokemonModel.map(response, false));
 
       this._pokemonsData.add(PokemonModel.map(response, _favoritesHavePokemon(name)));
 
@@ -193,112 +167,26 @@ abstract class _HomeController with Store {
     }
   }
 
-  @action
-  _loadFavoritesList() async{
-    final list = await localStoragePlus.read(localStoragePath);
-    if(list == null) return;
-    this._favoritesMap.addAll(json.decode(list));
-  }
+
+  //  FAVORITOS
+
+  ObservableList<dynamic> _favoritePokemons = ObservableList();
 
   @action
-  setFavorites(String key, bool value) async{
+  saveFavorites(PokemonModel poke, {bool changeIsFavorite = true})async{//mudar o isFavorite desse pokemon
 
-    if(this._favoritesMap.containsKey(key)){
-      this._favoritesMap[key] = value;
-
-    } else {
-      this._favoritesMap.addAll({
-        key: value
-      });
-    }
-    
-    this._pokemonsData.forEach((element) {//mudando o isFavorite do pokemon
-      if(element.name == key)
-        element.isFavorite = value;
-    });
-    
-    this._pokemonsFilteredByFavorite.forEach((element) {
-      if(element.name == key)
-        element.isFavorite = value;
-    });
-
-    await localStoragePlus.delete(localStoragePath);
-    await localStoragePlus.write(localStoragePath, json.encode(this._favoritesMap));
-  }
-
-  @action
-  _setFilteredPokemons(String key)async{
-    
-    await this._pokedexService.getPokemonByName(key).then((response){
-      if (response == null ) {
-        return;
-      }
-
-      this._pokemonsFilteredByFavorite.add(PokemonModel.map(response, true));
-    }).catchError((error){
-      this._setErrorMessage('Erro ao listar Pokemons!');
-    });
-  }
-
-  @action
-  filterPokemons()async{
-    
-    if(this.isFiltering){
-      this._pokemonsFilteredByFavorite.removeWhere((element) => !element.isFavorite!);
-      this.isFiltering = false;
-      await this.refreshPokemonsList();
-      return;
-    }
-
-    this.isLoading = true;
-    this.error = false;
-    this.textController.clear();
-    this._searchText = '';
-    this.isFiltering = true;
-    
-    this._favoritesMap.forEach((key, value) async{
-      if(this.isSearching) return;
-
-      if(value){
-        if(this._containsPokemon(key)){//lista de favoritos já tem o pokemon
-          return;
-        }
-        await this._setFilteredPokemons(key);
-        
-      }
-    });
-
-    await Future.delayed(Duration(milliseconds: 1200), () => this.isLoading = false);
-  }
-  
-  _containsPokemon(String name){
-    return this._pokemonsFilteredByFavorite.where((element) => element.name == name).isNotEmpty;
-
-  }
-
-  //  NEW FAVORITES------------
-
-
-
-
-
-  ObservableList<Map<String, dynamic>> _favoritePokemons = ObservableList();
-
-  @action
-  saveFavorites(PokemonModel poke){//mudar o isFavorite desse pokemon
-
-    poke.isFavorite = !poke.isFavorite!;
+    if(changeIsFavorite)
+      poke.isFavorite = !poke.isFavorite!;
 
     //se for para favoritar
     if(poke.isFavorite!){
-
       if(this._favoritesHavePokemon(poke.name!)){
         return;
       }else{
         this._favoritePokemons.add(poke.toMap());
       }
       
-    }else if(!poke.isFavorite!){//se for pra tirar da lista de favoritos
+    }else {//se for pra tirar da lista de favoritos
       if(this._favoritesHavePokemon(poke.name!))
         this._favoritePokemons.removeWhere((element) => element['name'] == poke.name!);
     }
@@ -306,6 +194,9 @@ abstract class _HomeController with Store {
     if(this.isFiltering && !poke.isFavorite!){
       this._pokemonsData.removeWhere((element) => element.name == poke.name);
     }
+
+    await localStoragePlus.delete(localStoragePath);
+    await localStoragePlus.write(localStoragePath, json.encode(this._favoritePokemons));
 
     print(this._favoritePokemons.length);
   }
@@ -339,14 +230,12 @@ abstract class _HomeController with Store {
     this._pokemonsData.sort((p1,p2)=>p1.id!.compareTo(p2.id!));
 
     await Future.delayed(Duration(milliseconds: 1200), () => this.isLoading = false);
-
-
   }
 
-  // @action
-  // _loadFavorites() async{
-  //   final list = await localStoragePlus.read('newfavs');
-  //   if(list == null) return;
-  //   this._favoritesMap.addAll(json.decode(list)); 
-  // }
+  @action
+  _loadFavorites() async{
+    final list = await localStoragePlus.read(localStoragePath);
+    if(list == null) return;
+    this._favoritePokemons.addAll(json.decode(list)); 
+  }
 }

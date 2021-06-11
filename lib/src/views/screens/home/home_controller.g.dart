@@ -9,13 +9,6 @@ part of 'home_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$HomeController on _HomeController, Store {
-  Computed<List<PokemonModel>>? _$pokemonsFilteredComputed;
-
-  @override
-  List<PokemonModel> get pokemonsFiltered => (_$pokemonsFilteredComputed ??=
-          Computed<List<PokemonModel>>(() => super.pokemonsFiltered,
-              name: '_HomeController.pokemonsFiltered'))
-      .value;
   Computed<List<PokemonDTO>>? _$pokemonsComputed;
 
   @override
@@ -44,38 +37,6 @@ mixin _$HomeController on _HomeController, Store {
       (_$disableButtonsComputed ??= Computed<bool>(() => super.disableButtons,
               name: '_HomeController.disableButtons'))
           .value;
-
-  final _$_favoritesMapAtom = Atom(name: '_HomeController._favoritesMap');
-
-  @override
-  ObservableMap<String, dynamic> get _favoritesMap {
-    _$_favoritesMapAtom.reportRead();
-    return super._favoritesMap;
-  }
-
-  @override
-  set _favoritesMap(ObservableMap<String, dynamic> value) {
-    _$_favoritesMapAtom.reportWrite(value, super._favoritesMap, () {
-      super._favoritesMap = value;
-    });
-  }
-
-  final _$_pokemonsFilteredByFavoriteAtom =
-      Atom(name: '_HomeController._pokemonsFilteredByFavorite');
-
-  @override
-  ObservableList<PokemonModel> get _pokemonsFilteredByFavorite {
-    _$_pokemonsFilteredByFavoriteAtom.reportRead();
-    return super._pokemonsFilteredByFavorite;
-  }
-
-  @override
-  set _pokemonsFilteredByFavorite(ObservableList<PokemonModel> value) {
-    _$_pokemonsFilteredByFavoriteAtom
-        .reportWrite(value, super._pokemonsFilteredByFavorite, () {
-      super._pokemonsFilteredByFavorite = value;
-    });
-  }
 
   final _$scrollControllerAtom = Atom(name: '_HomeController.scrollController');
 
@@ -260,37 +221,13 @@ mixin _$HomeController on _HomeController, Store {
         .run(() => super.refreshPokemonsList(refreshAll: refreshAll));
   }
 
-  final _$_loadFavoritesListAsyncAction =
-      AsyncAction('_HomeController._loadFavoritesList');
+  final _$saveFavoritesAsyncAction =
+      AsyncAction('_HomeController.saveFavorites');
 
   @override
-  Future _loadFavoritesList() {
-    return _$_loadFavoritesListAsyncAction
-        .run(() => super._loadFavoritesList());
-  }
-
-  final _$setFavoritesAsyncAction = AsyncAction('_HomeController.setFavorites');
-
-  @override
-  Future setFavorites(String key, bool value) {
-    return _$setFavoritesAsyncAction.run(() => super.setFavorites(key, value));
-  }
-
-  final _$_setFilteredPokemonsAsyncAction =
-      AsyncAction('_HomeController._setFilteredPokemons');
-
-  @override
-  Future _setFilteredPokemons(String key) {
-    return _$_setFilteredPokemonsAsyncAction
-        .run(() => super._setFilteredPokemons(key));
-  }
-
-  final _$filterPokemonsAsyncAction =
-      AsyncAction('_HomeController.filterPokemons');
-
-  @override
-  Future filterPokemons() {
-    return _$filterPokemonsAsyncAction.run(() => super.filterPokemons());
+  Future saveFavorites(PokemonModel poke, {bool changeIsFavorite = true}) {
+    return _$saveFavoritesAsyncAction.run(
+        () => super.saveFavorites(poke, changeIsFavorite: changeIsFavorite));
   }
 
   final _$changeToFilteredAsyncAction =
@@ -299,6 +236,14 @@ mixin _$HomeController on _HomeController, Store {
   @override
   Future changeToFiltered() {
     return _$changeToFilteredAsyncAction.run(() => super.changeToFiltered());
+  }
+
+  final _$_loadFavoritesAsyncAction =
+      AsyncAction('_HomeController._loadFavorites');
+
+  @override
+  Future _loadFavorites() {
+    return _$_loadFavoritesAsyncAction.run(() => super._loadFavorites());
   }
 
   final _$_HomeControllerActionController =
@@ -327,17 +272,6 @@ mixin _$HomeController on _HomeController, Store {
   }
 
   @override
-  dynamic saveFavorites(PokemonModel poke) {
-    final _$actionInfo = _$_HomeControllerActionController.startAction(
-        name: '_HomeController.saveFavorites');
-    try {
-      return super.saveFavorites(poke);
-    } finally {
-      _$_HomeControllerActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   String toString() {
     return '''
 scrollController: ${scrollController},
@@ -347,7 +281,6 @@ isFiltering: ${isFiltering},
 isLoading: ${isLoading},
 error: ${error},
 errorMessage: ${errorMessage},
-pokemonsFiltered: ${pokemonsFiltered},
 pokemons: ${pokemons},
 pokemonsData: ${pokemonsData},
 showSuffix: ${showSuffix},

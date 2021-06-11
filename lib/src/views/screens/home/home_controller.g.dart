@@ -60,6 +60,23 @@ mixin _$HomeController on _HomeController, Store {
     });
   }
 
+  final _$_pokemonsFilteredByFavoriteAtom =
+      Atom(name: '_HomeController._pokemonsFilteredByFavorite');
+
+  @override
+  ObservableList<PokemonModel> get _pokemonsFilteredByFavorite {
+    _$_pokemonsFilteredByFavoriteAtom.reportRead();
+    return super._pokemonsFilteredByFavorite;
+  }
+
+  @override
+  set _pokemonsFilteredByFavorite(ObservableList<PokemonModel> value) {
+    _$_pokemonsFilteredByFavoriteAtom
+        .reportWrite(value, super._pokemonsFilteredByFavorite, () {
+      super._pokemonsFilteredByFavorite = value;
+    });
+  }
+
   final _$scrollControllerAtom = Atom(name: '_HomeController.scrollController');
 
   @override

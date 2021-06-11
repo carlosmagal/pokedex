@@ -61,7 +61,7 @@ class HomeScreen extends StatelessWidget {
               child: GestureDetector(
                 onTap: this._homeController.disableButtons ? null : 
                 (){
-                  // this._homeController.filterPokemons();
+                  this._homeController.filterPokemons();
                 },
                 child: Icon(
                   this._homeController.isFiltering ? Icons.favorite : Icons.favorite_border_outlined,
@@ -204,11 +204,11 @@ class HomeScreen extends StatelessWidget {
             this._homeController.pokemonsFiltered.length : this._homeController.pokemonsData.length,
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           itemBuilder: (context, index){
-            // if(this._homeController.isFiltering)
-            //   return PokeCard(
-            //     this._homeController.pokemonsFiltered[index],
-            //     this._homeController.setFavorites 
-            //   );
+            if(this._homeController.isFiltering)
+              return PokeCard(
+                this._homeController.pokemonsFiltered[index],
+                this._homeController.setFavorites 
+              );
 
             return PokeCard(
               this._homeController.pokemonsData[index],

@@ -28,11 +28,12 @@ abstract class _HomeController with Store {
   @observable
   ObservableMap <String, dynamic> _favoritesMap = ObservableMap();
 
+  @observable
   ObservableList<PokemonModel> _pokemonsFilteredByFavorite = ObservableList();
 
   @computed
   List<PokemonModel> get pokemonsFiltered{
-    return this._pokemonsFilteredByFavorite;
+    return this._pokemonsFilteredByFavorite.where((element) => element.isFavorite!).toList();
   }
 
   @observable 
@@ -148,10 +149,11 @@ abstract class _HomeController with Store {
       }
       
       this._pokemonsData.clear();
+      final name = response['name'];//caso a pesquisa seja feita pelo número(id)
       
       //se ja tiver no salvo no favoritesmap, manda o valor que estiver la
-      if(this._favoritesMap.containsKey(this._searchText.toLowerCase()))    
-        this._pokemonsData.add(PokemonModel.map(response, this._favoritesMap[this._searchText.toLowerCase()]));
+      if(this._favoritesMap.containsKey(name))    
+        this._pokemonsData.add(PokemonModel.map(response, this._favoritesMap[name]));
       else        
         this._pokemonsData.add(PokemonModel.map(response, false));
 
@@ -198,8 +200,6 @@ abstract class _HomeController with Store {
   @action
   setFavorites(String key, bool value) async{
 
-    PokemonModel? itemToBeRemoved;
-
     if(this._favoritesMap.containsKey(key)){
       this._favoritesMap[key] = value;
 
@@ -207,26 +207,17 @@ abstract class _HomeController with Store {
       this._favoritesMap.addAll({
         key: value
       });
-
     }
     
     this._pokemonsData.forEach((element) {//mudando o isFavorite do pokemon
       if(element.name == key)
         element.isFavorite = value;
     });
-
-    //caso o elemento esteja na lista de favoritos e nao esteja mais como favorito
+    
     this._pokemonsFilteredByFavorite.forEach((element) {
-      if(element.name == key){
-        if(!value){
-          itemToBeRemoved = element;
-          return;
-        }
-      }
+      if(element.name == key)
+        element.isFavorite = value;
     });
-
-    if(itemToBeRemoved != null)
-      this._pokemonsFilteredByFavorite.removeWhere((r) => r == itemToBeRemoved);
 
     await localStoragePlus.delete(localStoragePath);
     await localStoragePlus.write(localStoragePath, json.encode(this._favoritesMap));
@@ -248,11 +239,14 @@ abstract class _HomeController with Store {
 
   @action
   filterPokemons()async{
+    
     if(this.isFiltering){
+      this._pokemonsFilteredByFavorite.removeWhere((element) => !element.isFavorite!);
       this.isFiltering = false;
+      await this.refreshPokemonsList();
       return;
-
     }
+
     this.isLoading = true;
     this.error = false;
     this.textController.clear();
@@ -280,13 +274,3 @@ abstract class _HomeController with Store {
   }
 
 }
-
-    // this.scrollController.addListener(() {
-    //   if(this.scrollController.position.atEdge){
-    //     if (this.scrollController.position.pixels == 0) {
-    //       print('top'); 
-    //     } else {
-    //       print('bottom');
-    //     }
-    //   }
-    // });

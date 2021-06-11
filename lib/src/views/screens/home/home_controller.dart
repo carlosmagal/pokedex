@@ -79,21 +79,22 @@ abstract class _HomeController with Store {
   _getPokemonCardData() async{
     for(var element in _pokemons){
       
-      if(this.isSearching) break;
+      if(this.isSearching || this.isFiltering) break;
 
       await this._pokedexService.getPokemonByName(element.name).then((response){
-        if (response == null ) {
+        if (response == null || this.isSearching || this.isFiltering) {
           return;
         }
         //se ja tiver no salvo no map, manda o valor que estiver la
-        if(this._favoritesMap.containsKey(element.name!)){
-          this._pokemonsData.add(PokemonModel.map(response, this._favoritesMap[element.name!]));
+        // if(this._favoritesMap.containsKey(element.name!)){
+        //   this._pokemonsData.add(PokemonModel.map(response, this._favoritesMap[element.name!]));
 
-        }else {//se nao estiver salvo, vai como false e é cadastrado no map
-          this._pokemonsData.add(PokemonModel.map(response, false));
-          this.setFavorites(element.name!, false);
+        // }else {//se nao estiver salvo, vai como false e é cadastrado no map
+        //   this._pokemonsData.add(PokemonModel.map(response, false));
+        //   this.setFavorites(element.name!, false);
+        // }
+      this._pokemonsData.add(PokemonModel.map(response, _favoritesHavePokemon(element.name!)));
 
-        }
       });
     }
     print(this._favoritesMap);
@@ -152,10 +153,12 @@ abstract class _HomeController with Store {
       final name = response['name'];//caso a pesquisa seja feita pelo número(id)
       
       //se ja tiver no salvo no favoritesmap, manda o valor que estiver la
-      if(this._favoritesMap.containsKey(name))    
-        this._pokemonsData.add(PokemonModel.map(response, this._favoritesMap[name]));
-      else        
-        this._pokemonsData.add(PokemonModel.map(response, false));
+      // if(this._favoritesMap.containsKey(name))    
+      //   this._pokemonsData.add(PokemonModel.map(response, this._favoritesMap[name]));
+      // else        
+      //   this._pokemonsData.add(PokemonModel.map(response, false));
+
+      this._pokemonsData.add(PokemonModel.map(response, _favoritesHavePokemon(name)));
 
     }).catchError((error){
       this._setErrorMessage('Pokemon não encontrado!');
@@ -273,4 +276,77 @@ abstract class _HomeController with Store {
 
   }
 
+  //  NEW FAVORITES------------
+
+
+
+
+
+  ObservableList<Map<String, dynamic>> _favoritePokemons = ObservableList();
+
+  @action
+  saveFavorites(PokemonModel poke){//mudar o isFavorite desse pokemon
+
+    poke.isFavorite = !poke.isFavorite!;
+
+    //se for para favoritar
+    if(poke.isFavorite!){
+
+      if(this._favoritesHavePokemon(poke.name!)){
+        return;
+      }else{
+        this._favoritePokemons.add(poke.toMap());
+      }
+      
+    }else if(!poke.isFavorite!){//se for pra tirar da lista de favoritos
+      if(this._favoritesHavePokemon(poke.name!))
+        this._favoritePokemons.removeWhere((element) => element['name'] == poke.name!);
+    }
+
+    if(this.isFiltering && !poke.isFavorite!){
+      this._pokemonsData.removeWhere((element) => element.name == poke.name);
+    }
+
+    print(this._favoritePokemons.length);
+  }
+
+  _favoritesHavePokemon(String name){
+    return this._favoritePokemons.where((element) => element['name'] == name).isNotEmpty;
+  }
+
+  @action
+  changeToFiltered()async {
+
+    if(this.isFiltering){
+      this.isFiltering = false;
+      await this.refreshPokemonsList(refreshAll: true);
+      return;
+    }
+
+    this.isLoading = true;
+    this.error = false;
+    this.textController.clear();
+    this._searchText = '';
+    this.isFiltering = true;
+
+    this._pokemonsData.clear();
+
+    this._favoritePokemons.forEach((element) {
+      if(element['isFavorite'])
+        this._pokemonsData.add(PokemonModel.fromFavoritesMap(element));
+    });
+    
+    this._pokemonsData.sort((p1,p2)=>p1.id!.compareTo(p2.id!));
+
+    await Future.delayed(Duration(milliseconds: 1200), () => this.isLoading = false);
+
+
+  }
+
+  // @action
+  // _loadFavorites() async{
+  //   final list = await localStoragePlus.read('newfavs');
+  //   if(list == null) return;
+  //   this._favoritesMap.addAll(json.decode(list)); 
+  // }
 }

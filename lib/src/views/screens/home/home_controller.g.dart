@@ -293,6 +293,14 @@ mixin _$HomeController on _HomeController, Store {
     return _$filterPokemonsAsyncAction.run(() => super.filterPokemons());
   }
 
+  final _$changeToFilteredAsyncAction =
+      AsyncAction('_HomeController.changeToFiltered');
+
+  @override
+  Future changeToFiltered() {
+    return _$changeToFilteredAsyncAction.run(() => super.changeToFiltered());
+  }
+
   final _$_HomeControllerActionController =
       ActionController(name: '_HomeController');
 
@@ -313,6 +321,17 @@ mixin _$HomeController on _HomeController, Store {
         name: '_HomeController._setErrorMessage');
     try {
       return super._setErrorMessage(errorText);
+    } finally {
+      _$_HomeControllerActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic saveFavorites(PokemonModel poke) {
+    final _$actionInfo = _$_HomeControllerActionController.startAction(
+        name: '_HomeController.saveFavorites');
+    try {
+      return super.saveFavorites(poke);
     } finally {
       _$_HomeControllerActionController.endAction(_$actionInfo);
     }

@@ -30,6 +30,16 @@ class PokemonModel {
     this.isFavorite = value;
   }
 
+  PokemonModel.fromFavoritesMap(Map<String, dynamic> pokemon){
+    this.name = pokemon['name'];
+    this.id = pokemon['id'];
+    this.imgUrl = pokemon['imgUrl'];
+    this.types = pokemon['types'];
+    this.stats = pokemon['stats'];
+    this.color = ColorsUtil.colorByType[this.types!.first] ?? ColorsUtil.colorless;
+    this.isFavorite = pokemon['isFavorite'];
+  }
+
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{};
     map['name'] = this.name;

@@ -61,7 +61,7 @@ class HomeScreen extends StatelessWidget {
               child: GestureDetector(
                 onTap: this._homeController.disableButtons ? null : 
                 (){
-                  this._homeController.filterPokemons();
+                  this._homeController.changeToFiltered();
                 },
                 child: Icon(
                   this._homeController.isFiltering ? Icons.favorite : Icons.favorite_border_outlined,
@@ -89,7 +89,7 @@ class HomeScreen extends StatelessWidget {
               if(this._homeController.pokemonsData.isEmpty || this._homeController.isSearching || this._homeController.isLoading)
                 return this._bodyProgress();
 
-              if(this._homeController.isFiltering && this._homeController.pokemonsFiltered.isEmpty)
+              if(this._homeController.isFiltering && this._homeController.pokemonsData.isEmpty)
                 return this._bodyEmptyList();
 
               return this._bodyPokemonList();
@@ -200,19 +200,18 @@ class HomeScreen extends StatelessWidget {
           controller: this._homeController.scrollController,
           physics: BouncingScrollPhysics(),
           padding: EdgeInsets.only(bottom: 16.0),
-          itemCount: this._homeController.isFiltering ? 
-            this._homeController.pokemonsFiltered.length : this._homeController.pokemonsData.length,
+          itemCount: this._homeController.pokemonsData.length,
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           itemBuilder: (context, index){
-            if(this._homeController.isFiltering)
-              return PokeCard(
-                this._homeController.pokemonsFiltered[index],
-                this._homeController.setFavorites 
-              );
+            // if(this._homeController.isFiltering)
+            //   return PokeCard(
+            //     this._homeController.pokemonsFiltered[index],
+            //     this._homeController.setFavorites 
+            //   );
 
             return PokeCard(
               this._homeController.pokemonsData[index],
-              this._homeController.setFavorites,
+              this._homeController.saveFavorites,
             );
           }
         );

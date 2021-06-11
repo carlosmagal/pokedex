@@ -22,13 +22,15 @@ class _PokeCardState extends State<PokeCard> {
   @override
   Widget build(BuildContext context) {
     return ContainerPlus(
-      onTap: (){
-        navigatorPlus.showModal(
+      onTap: ()async{
+        print('abriu');
+        await navigatorPlus.showModal(
           DetalheScreen(
             widget.pokemon,
             this._setFavorite,
           ),
         );
+        print('fechou');
       },
       radius: RadiusPlus.all(20),
       margin: const EdgeInsets.fromLTRB(24, 16, 24, 0),
@@ -107,8 +109,10 @@ class _PokeCardState extends State<PokeCard> {
 
   _setFavorite() async{
     setState(() {});
-    await widget.setIsFavorite(widget.pokemon.name!, !widget.pokemon.isFavorite!);
+    // widget.pokemon.isFavorite = !widget.pokemon.isFavorite!;
+    // await widget.setIsFavorite(widget.pokemon.name!, !widget.pokemon.isFavorite!);
      
+     await widget.setIsFavorite(widget.pokemon);
   }
   
 }

@@ -22,6 +22,7 @@ abstract class _HomeController with Store {
 
   _loadHomeController() async{
     await this._loadFavorites();
+    this._loadScrollController();
     this._getPokemons();
   }
 
@@ -38,10 +39,21 @@ abstract class _HomeController with Store {
   List<PokemonDTO> get pokemons {
     return _pokemons;
   }
+  
+  @observable
+  int _page = 0;//Random().nextInt(1110)
+
+  @computed
+  bool get hasMoreToLoad{
+    return this._page < 75 && !this.isFiltering && this._pokemonsData.length > 7;
+  }
 
   @action
   _getPokemons() async{
-    await _pokedexService.getPokemons(Random().nextInt(1110), 15).then((response) {
+
+    if(this.isFiltering) return;
+
+    await _pokedexService.getPokemons(this._page * apiOffset, apiOffset).then((response) {
       if (response == null && response['results'] != null) {
         _pokemons = [];
       }
@@ -77,6 +89,7 @@ abstract class _HomeController with Store {
         this._pokemonsData.add(PokemonModel.map(response, _favoritesHavePokemon(element.name!)));
       });
     }
+    this._pokemons.clear();
     print(this._favoritePokemons.length);
   }
 
@@ -157,6 +170,7 @@ abstract class _HomeController with Store {
 
     //se a lista de pokemons estiver vazia, é preenchida novamente
     if(this.pokemonsData.isEmpty || this.pokemonsData.length == 1 || refreshAll){
+      this._page = 0;
       this.pokemonsData.clear();
       await this._getPokemons();
       this.isLoading = false;
@@ -165,6 +179,16 @@ abstract class _HomeController with Store {
       await Future.delayed(Duration(seconds: 1), () => this.isLoading = false);
       
     }
+  }
+
+  @action
+  _loadScrollController(){
+    this.scrollController.addListener(() {
+      if(this.scrollController.position.maxScrollExtent == this.scrollController.offset){
+        this._page++;
+        this._getPokemons();
+      }
+    });
   }
 
 

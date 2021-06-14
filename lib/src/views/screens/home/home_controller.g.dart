@@ -16,6 +16,13 @@ mixin _$HomeController on _HomeController, Store {
       (_$pokemonsComputed ??= Computed<List<PokemonDTO>>(() => super.pokemons,
               name: '_HomeController.pokemons'))
           .value;
+  Computed<bool>? _$hasMoreToLoadComputed;
+
+  @override
+  bool get hasMoreToLoad =>
+      (_$hasMoreToLoadComputed ??= Computed<bool>(() => super.hasMoreToLoad,
+              name: '_HomeController.hasMoreToLoad'))
+          .value;
   Computed<List<PokemonModel>>? _$pokemonsDataComputed;
 
   @override
@@ -80,6 +87,21 @@ mixin _$HomeController on _HomeController, Store {
   set _pokemons(List<PokemonDTO> value) {
     _$_pokemonsAtom.reportWrite(value, super._pokemons, () {
       super._pokemons = value;
+    });
+  }
+
+  final _$_pageAtom = Atom(name: '_HomeController._page');
+
+  @override
+  int get _page {
+    _$_pageAtom.reportRead();
+    return super._page;
+  }
+
+  @override
+  set _page(int value) {
+    _$_pageAtom.reportWrite(value, super._page, () {
+      super._page = value;
     });
   }
 
@@ -272,6 +294,17 @@ mixin _$HomeController on _HomeController, Store {
   }
 
   @override
+  dynamic _loadScrollController() {
+    final _$actionInfo = _$_HomeControllerActionController.startAction(
+        name: '_HomeController._loadScrollController');
+    try {
+      return super._loadScrollController();
+    } finally {
+      _$_HomeControllerActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 scrollController: ${scrollController},
@@ -282,6 +315,7 @@ isLoading: ${isLoading},
 error: ${error},
 errorMessage: ${errorMessage},
 pokemons: ${pokemons},
+hasMoreToLoad: ${hasMoreToLoad},
 pokemonsData: ${pokemonsData},
 showSuffix: ${showSuffix},
 disableButtons: ${disableButtons}

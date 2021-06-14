@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_plus/flutter_plus.dart';
 import 'package:get_it/get_it.dart';
@@ -15,11 +16,37 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ColorsUtil.background,
-      appBar: this._buildAppBar(),
-      body: this._buildBody(),
+    return WillPopScope(
+      onWillPop: ()async{
+        return this._onPop();
+      },
+      child: Scaffold(
+        backgroundColor: ColorsUtil.background,
+        appBar: this._buildAppBar(),
+        body: this._buildBody(),
+      ),
     );
+  }
+
+  bool _onPop(){
+    dialogPlus.showDefault(
+      title: 'Deseja sair do aplicativo?',
+      elementsSpacing: 32,
+      elevation: 100,
+      buttonsHeight: 40,
+      radius: RadiusPlus.all(8),
+      buttonOneText: 'Cancelar',
+      buttonTwoText: 'Confirmar',
+      buttonOneCallback: () {
+        navigatorPlus.back();
+      },
+      buttonTwoCallback: () {
+        SystemNavigator.pop();
+      },
+      buttonOneColor: Colors.red,
+      titleWeight: FontWeight.w500,
+    );
+    return false;
   }
 
   _buildAppBar(){
@@ -34,26 +61,6 @@ class HomeScreen extends StatelessWidget {
         color: ColorsUtil.cinzaEscuro,
       ),
       actions: [
-        // Observer(
-        //   builder: (context) {
-        //     return Padding(
-        //       padding: const EdgeInsets.only(right: 12.0),
-        //       child: GestureDetector(
-        //         onTap: this._homeController.disableButtons ? null : 
-        //           (){
-        //             this._homeController.refreshPokemonsList(
-        //               refreshAll: !this._homeController.isFiltering
-        //             );
-        //           },
-        //         child: Icon(
-        //           Icons.refresh_rounded,
-        //           color: this._homeController.disableButtons ? 
-        //             ColorsUtil.cinzaEscuro.withOpacity(0.5) : ColorsUtil.cinzaEscuro
-        //         ),
-        //       ),
-        //     );
-        //   }
-        // ),
         Observer(
           builder: (context) {
             return Padding(
@@ -202,14 +209,20 @@ class HomeScreen extends StatelessWidget {
           controller: this._homeController.scrollController,
           physics: BouncingScrollPhysics(),
           padding: EdgeInsets.only(bottom: 16.0),
-          itemCount: this._homeController.pokemonsData.length,
+          itemCount: this._homeController.pokemonsData.length + 1,
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           itemBuilder: (context, index){
-            return PokeCard(
-              this._homeController.pokemonsData[index],
-              this._homeController.saveFavorites,
-              this._homeController.isFiltering,
-            );
+            if(index < this._homeController.pokemonsData.length)
+              return PokeCard(
+                this._homeController.pokemonsData[index],
+                this._homeController.saveFavorites,
+                this._homeController.isFiltering,
+              );
+
+            if(this._homeController.hasMoreToLoad)
+              return this._loadingContainer();
+
+            return Container();
           }
         );
       }
@@ -238,6 +251,17 @@ class HomeScreen extends StatelessWidget {
             fontSize: 12,
           ),
         ],
+      ),
+    );
+  }
+
+  _loadingContainer(){
+    return ContainerPlus(
+      radius: RadiusPlus.all(20),
+      margin: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+      height: 85,
+      skeleton: SkeletonPlus.custom(
+        enabled: true,
       ),
     );
   }

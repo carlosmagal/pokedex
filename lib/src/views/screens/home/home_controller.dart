@@ -45,7 +45,7 @@ abstract class _HomeController with Store {
 
   @computed
   bool get hasMoreToLoad{
-    return this._page < 75 && !this.isFiltering && this._pokemonsData.length > 7;
+    return this._page < 1118~/apiOffset && !this.isFiltering && this._pokemonsData.length > 7;
   }
 
   @action
@@ -78,6 +78,8 @@ abstract class _HomeController with Store {
 
   @action 
   _getPokemonCardData() async{
+    List<PokemonModel> list = [];
+
     for(var element in _pokemons){
       
       if(this.isSearching || this.isFiltering) break;
@@ -86,9 +88,12 @@ abstract class _HomeController with Store {
         if (response == null || this.isSearching || this.isFiltering)
           return;
         
-        this._pokemonsData.add(PokemonModel.map(response, _favoritesHavePokemon(element.name!)));
+        list.add(PokemonModel.map(response, _favoritesHavePokemon(element.name!)));
       });
     }
+
+    this._pokemonsData.addAll(list);
+    this.loadingPokemons = false;
     this._pokemons.clear();
     print(this._favoritePokemons.length);
   }
@@ -184,12 +189,16 @@ abstract class _HomeController with Store {
   @action
   _loadScrollController(){
     this.scrollController.addListener(() {
-      if(this.scrollController.position.maxScrollExtent == this.scrollController.offset){
+      if(this.scrollController.position.maxScrollExtent == this.scrollController.offset && !this.loadingPokemons){
+        // if(this._pokemonsData.length / (apiOffset*(this._page+1)) != 1) return;
         this._page++;
+        this.loadingPokemons = true;
         this._getPokemons();
       }
     });
   }
+  @observable
+  bool loadingPokemons = false;
 
 
   //  FAVORITOS

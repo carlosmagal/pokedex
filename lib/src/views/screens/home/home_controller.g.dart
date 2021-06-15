@@ -210,6 +210,21 @@ mixin _$HomeController on _HomeController, Store {
     });
   }
 
+  final _$loadingPokemonsAtom = Atom(name: '_HomeController.loadingPokemons');
+
+  @override
+  bool get loadingPokemons {
+    _$loadingPokemonsAtom.reportRead();
+    return super.loadingPokemons;
+  }
+
+  @override
+  set loadingPokemons(bool value) {
+    _$loadingPokemonsAtom.reportWrite(value, super.loadingPokemons, () {
+      super.loadingPokemons = value;
+    });
+  }
+
   final _$_getPokemonsAsyncAction = AsyncAction('_HomeController._getPokemons');
 
   @override
@@ -314,6 +329,7 @@ isFiltering: ${isFiltering},
 isLoading: ${isLoading},
 error: ${error},
 errorMessage: ${errorMessage},
+loadingPokemons: ${loadingPokemons},
 pokemons: ${pokemons},
 hasMoreToLoad: ${hasMoreToLoad},
 pokemonsData: ${pokemonsData},

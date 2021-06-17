@@ -140,8 +140,9 @@ abstract class _HomeController with Store {
     this.isSearching = true;
     this.error = false;
     this.isFiltering = false;
+    final text = this._searchText.toLowerCase();
 
-    await this._pokedexService.getPokemonByName(this._searchText.toLowerCase()).then((response){
+    await this._pokedexService.getPokemonByName(text).then((response){
       if(response == null){
         this._setErrorMessage('Pokemon não encontrado!');
         return;
@@ -153,7 +154,7 @@ abstract class _HomeController with Store {
       this._pokemonsData.add(PokemonModel.map(response, _favoritesHavePokemon(name)));
 
     }).catchError((error){
-      this._setErrorMessage('Pokemon não encontrado!');
+      this._setErrorMessage('"$text" não foi encontrado!');
 
     });
 
